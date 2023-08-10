@@ -29,7 +29,6 @@ public class Main {
         while (!q.isEmpty()) {
             String here = q.poll();
             int dist = map.get(here);
-//            System.out.printf("%s , %d\n", here, dist);
             int empty = here.indexOf("0");
             int y = empty / 3;
             int x = empty % 3;
