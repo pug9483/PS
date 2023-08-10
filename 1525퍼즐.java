@@ -15,7 +15,6 @@ public class Main {
         for (int i = 0; i < N; i++) {
             sb.append(br.readLine().replace(" ", ""));
         }
-
         System.out.println(solve(sb.toString(), "123456780"));
     }
 
@@ -58,7 +57,6 @@ public class Main {
         sb.setCharAt(origin, c);
         return sb.toString();
     }
-
 
     private static boolean check(int y, int x) {
         if(y < 0 || y >= N || x < 0 || x >= N) return true;
