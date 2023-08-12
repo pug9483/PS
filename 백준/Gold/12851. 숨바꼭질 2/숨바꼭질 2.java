@@ -39,7 +39,6 @@ public class Main {
         return ret;
     }
 
-
     private static void bfs() {
         dist[N] = 0;
         Queue<Integer> q = new LinkedList<>();
