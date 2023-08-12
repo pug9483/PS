@@ -22,15 +22,23 @@ public class Main {
         System.out.println(reconstruct(K));
     }
 
+    private static void go(int here, int next, Queue<Integer> q) {
+        if(check(next) && dist[next] == -1){
+            q.add(next);
+            dist[next] = dist[here] + 1;
+        }
+    }
+
     private static int reconstruct(int here) {
         if(here < 0 || here > 100000) return 0;
         if(here == N) return 1;
         int ret = 0;
-        if(here - 1 >= 0 && dist[here-1] + 1 == dist[here]) ret += reconstruct(here-1);
-        if(here + 1 <= 100000 && dist[here+1] + 1 == dist[here]) ret += reconstruct(here+1);
-        if(here > 0 && here % 2 == 0 && dist[here / 2] + 1 == dist[here]) ret += reconstruct(here / 2);
+        if(check(here-1) && dist[here-1] + 1 == dist[here]) ret += reconstruct(here-1);
+        if(check(here+1) && dist[here+1] + 1 == dist[here]) ret += reconstruct(here+1);
+        if(here % 2 == 0 && dist[here / 2] + 1 == dist[here]) ret += reconstruct(here / 2);
         return ret;
     }
+
 
     private static void bfs() {
         dist[N] = 0;
@@ -38,21 +46,9 @@ public class Main {
         q.add(N);
         while (!q.isEmpty()) {
             int here = q.poll();
-            int next = here + 1;
-            if(check(next) && dist[next] == -1){
-                q.add(next);
-                dist[next] = dist[here] + 1;
-            }
-            next = here - 1;
-            if(check(next) && dist[next] == -1){
-                q.add(next);
-                dist[next] = dist[here] + 1;
-            }
-            next = here * 2;
-            if(check(next) && dist[next] == -1){
-                q.add(next);
-                dist[next] = dist[here] + 1;
-            }
+            go(here, here + 1, q);
+            go(here, here - 1, q);
+            go(here, here * 2, q);
         }
     }
 }
