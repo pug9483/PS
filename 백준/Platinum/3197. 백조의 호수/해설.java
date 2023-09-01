@@ -1,3 +1,9 @@
+/*
+2개의 BFS 이용
+-> 각각의 날짜마다 물과 백조가 어디까지 이동할 수 있는지 저장해야 한다.
+시간복잡도: O(NM)
+*/
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
