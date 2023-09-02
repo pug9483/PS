@@ -46,7 +46,7 @@ public class Main {
     public static int[] tin;
     public static int[] tout;
     public static int timer = 0;
-    public static int l = 0;
+    public static int log = 0;
     
     public static void main(String[] args) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -61,9 +61,9 @@ public class Main {
             graph.get(u).add(v);
             graph.get(v).add(u);
         }
-        while((1 << l) <= N) l++;
-        p = new int[N+1][l];
-        l--;
+        while((1 << log) <= N) log++;
+        p = new int[N+1][log];
+        log--;
         dfs(1, 1);
         st = new StringTokenizer(br.readLine());
         M = Integer.parseInt(st.nextToken());
@@ -79,7 +79,7 @@ public class Main {
     public static void dfs(int here, int parent){
         tin[here] = ++timer;
         p[here][0] = parent;
-        for(int i = 1; i <= l; i++)
+        for(int i = 1; i <= log; i++)
             p[here][i] = p[p[here][i-1]][i-1];
         for(int there: graph.get(here))
             if(there != parent)
@@ -90,7 +90,7 @@ public class Main {
     public static int LCA(int u, int v){
         if(upper(u, v)) return u;
         if(upper(v, u)) return v;
-        for(int i = l; i >= 0; i--)
+        for(int i = log; i >= 0; i--)
             if(!upper(p[u][i], v))
                 u = p[u][i];
         return p[u][0];
