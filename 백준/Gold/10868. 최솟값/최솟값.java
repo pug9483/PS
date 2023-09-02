@@ -6,6 +6,7 @@ import java.util.*;
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static StringBuilder sb = new StringBuilder();
     public static int N, M;
     public static int[] A;
     public static int[] tree;
@@ -24,8 +25,9 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int left = Integer.parseInt(st.nextToken()) - 1;
             int right = Integer.parseInt(st.nextToken()) - 1;
-            System.out.println(query(left, right, 0, N-1, 1));
+            sb.append(query(left, right, 0, N-1, 1)).append("\n");
         }
+        System.out.print(sb);
     }
     
     public static void makeSegmentTree(){
