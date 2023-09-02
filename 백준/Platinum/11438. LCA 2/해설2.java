@@ -1,3 +1,37 @@
+/*
+DFS와 upper 함수를 이용하여 LCA 구하기
+
+tin[i]: dfs로 i에 방문할 때, 몇 번째였는지 기록
+tout[i]: dfs로 i에서 나갈 때, 몇 번째였는지 기록
+// l: while((1 << l) <= N) l++; 을 통해 구할 수 있다.
+
+void dfs(int v, int parent){
+    tin[v] = ++timer;
+    p[v][0] = parent;
+    for(int i = 1; i <= l; i++)
+        p[v][i] = p[p[v][i-1]][i-1]; // dfs를 하면서 dp도 같이 하기
+    for(int to: a[v]){
+        if(to != parent)
+            dfs(to, v);
+    }
+    tout[v] = ++timer;
+}
+
+int lca(int u, int v){
+    if(upper(u, v)) return u;
+    if(upper(v, u)) return v;
+    for(int i = l; i >= 0; i--)
+        if(!upper(p[u][i], v)) 
+            u = p[u][i];
+    return p[u][0];
+}
+
+upper(u, v): u가 v의 조상이면 true, 아니면 false 반환 함수
+bool upper(int u, int v){
+    return tin[u] <= tin[v] && tout[u] >= tout[v];
+}
+*/
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
