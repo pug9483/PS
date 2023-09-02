@@ -3,7 +3,7 @@ DFS와 upper 함수를 이용하여 LCA 구하기
 
 tin[i]: dfs로 i에 방문할 때, 몇 번째였는지 기록
 tout[i]: dfs로 i에서 나갈 때, 몇 번째였는지 기록
-// l: while((1 << l) <= N) l++; 을 통해 구할 수 있다.
+log 변수: while((1 << l) <= N) l++; 을 통해 구할 수 있다.
 
 void dfs(int v, int parent){
     tin[v] = ++timer;
