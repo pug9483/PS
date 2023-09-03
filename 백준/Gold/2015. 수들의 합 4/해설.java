@@ -33,16 +33,13 @@ public class Main {
     }
     
     public static long solve(){
-        long ret = 0;
+        long ret = 0L;
         for(int i = 1; i <= N; i++)
             pSum[i] = A[i] + pSum[i-1];
-        
         map.put(0, 1L);
         for(int i = 1; i <= N; i++){
             ret += map.getOrDefault(pSum[i] - K, 0L);
-            if(map.containsKey(pSum[i]))
-                map.put(pSum[i], map.get(pSum[i]) + 1);
-            else map.put(pSum[i], 1L);
+            map.put(pSum[i], map.getOrDefault(pSum[i], 0L) + 1);
         }
         return ret;
     }
