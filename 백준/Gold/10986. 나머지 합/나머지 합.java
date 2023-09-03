@@ -8,7 +8,7 @@ public class Main {
     public static StringBuilder sb = new StringBuilder();
     public static int N, M;
     public static int[] A;
-    public static int[] cnt;
+    public static int[] pSum;
     public static Map<Integer, Long> map = new HashMap<>();
     
     public static void main(String[] args) throws IOException {
@@ -16,25 +16,31 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         A = new int[N];
-        cnt = new int[M];
+        pSum = new int[N];
         st = new StringTokenizer(br.readLine());
         for(int i = 0; i < N; i++){
-            A[i] = Integer.parseInt(st.nextToken()) % M;
+            A[i] = Integer.parseInt(st.nextToken());
         }
+        partialSum();
         System.out.println(solve());
+    }
+ 
+    public static void partialSum(){
+        int sum = 0;
+        for(int i = 0; i < N; i++){
+            sum = (sum + A[i]) % M;
+            pSum[i] = sum;
+        }
     }
     
     public static long solve(){
         long ret = 0;
-        int sum = 0;
-        cnt[0]++;
         for(int i = 0; i < N; i++){
-            sum += A[i];
-            sum %= M;
-            cnt[sum]++;
+            if(pSum[i] % M == 0) ret++;
+            if(map.containsKey(pSum[i])) ret += map.get(pSum[i]);
+            if(!map.containsKey(pSum[i])) map.put(pSum[i], 1L);
+            else map.put(pSum[i], map.get(pSum[i]) + 1);
         }
-        for(int i = 0; i < M; i++)
-            ret += 1L * (cnt[i] * (cnt[i] - 1L)) / 2L;
         return ret;
     }
 }
