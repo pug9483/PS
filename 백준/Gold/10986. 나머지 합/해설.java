@@ -16,7 +16,6 @@ public class Main {
     public static int N, M;
     public static int[] A;
     public static int[] cnt;
-    public static Map<Integer, Long> map = new HashMap<>();
     
     public static void main(String[] args) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
