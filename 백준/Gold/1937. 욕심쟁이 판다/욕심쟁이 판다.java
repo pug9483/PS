@@ -1,69 +1,58 @@
 import java.io.BufferedReader;
-import java.io.CharConversionException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 import java.util.*;
-import java.lang.Math;
 
-public class Main {
-
-    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static int N;
-    private static int[][] board;
-    private static int[][] cache;
-    private static boolean[][] visited;
-    private static final int INF = 987564321;
-    private static int[] dy = {-1, 1, 0, 0};
-    private static int[] dx = {0, 0, 1, -1};
+public class Main {      
+    static class Point{
+        int y;
+        int x;
+        public Point(int y, int x){
+            this.y = y;
+            this.x = x;
+        }
+    }
+    
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static int N;
+    public static int[][] A;
+    public static int[][] memo;
+    public static int[] dy = {0, 0, 1, -1};
+    public static int[] dx = {1, -1, 0, 0};
+    public static final int INF = 987654321;
     
     public static void main(String[] args) throws IOException {
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        
+        StringTokenizer st = new StringTokenizer(br.readLine());   
         N = Integer.parseInt(st.nextToken());
-        board = new int[N][N];
-        cache = new int[N][N];
-        visited = new boolean[N][N];
-        initCache(cache);
+        A = new int[N][N];
+        for(int i = 0; i < N; i++){
+            st = new StringTokenizer(br.readLine());   
+            for(int j = 0; j < N; j++)
+                A[i][j] = Integer.parseInt(st.nextToken());
+        }
+        memo = new int[N][N];
+        for(int i = 0; i < N; i++) Arrays.fill(memo[i], -1);
         int ret = -INF;
-        
-        for(int i = 0; i < N; i++){
-            st = new StringTokenizer(br.readLine());
-            for(int j = 0; j < N; j++){
-                board[i][j] = Integer.parseInt(st.nextToken());
-            }
-        }
-        
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < N; j++){
-                visited[i][j] = true;
+        for(int i = 0; i < N; i++)
+            for(int j = 0; j < N; j++)
                 ret = Math.max(ret, solve(i, j));
-                visited[i][j] = false;
-            }
-        }
         System.out.println(ret);
     }
     
     public static int solve(int y, int x){
+        if(memo[y][x] != -1) return memo[y][x];
         int ret = 1;
-        
-        if(cache[y][x] != -1) return cache[y][x];
-        
         for(int dir = 0; dir < 4; dir++){
-            int ny = y + dy[dir], nx = x + dx[dir];
-            if(ny < 0 || ny >= N || nx < 0 || nx >= N || visited[ny][nx]) continue;
-            if(board[ny][nx] <= board[y][x]) continue;
-            visited[ny][nx] = true;
-            ret = Math.max(ret, 1 + solve(ny, nx));            
-            visited[ny][nx] = false;
+            int ny = y + dy[dir];
+            int nx = x + dx[dir];
+            if(check(ny, nx) || A[ny][nx] <= A[y][x]) continue;
+            ret = Math.max(ret, 1 + solve(ny, nx));
         }
-        cache[y][x] = ret;
+        memo[y][x] = ret;
         return ret;
     }
     
-    public static void initCache(int[][] cache){
-        for(int i = 0; i < N; i++)
-            Arrays.fill(cache[i], -1);
+    public static boolean check(int y, int x){
+        return y < 0 || y >= N || x < 0 || x >= N;
     }
 }
