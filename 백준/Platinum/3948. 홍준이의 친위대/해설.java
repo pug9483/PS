@@ -1,3 +1,18 @@
+/*
+Tall[N] = 1번 사람 > 2번 사람으로 줄을 서는 경우의 수
+Short[N] = 1번 사람 < 2번 사람으로 줄을 서는 경우의 수
+Tall[N] = Short[N]
+
+Tall[0] = 1, Tall[1] = Tall[2] = 1
+Tall[N]을 구하기 위해 가장 키가 큰 사람의 위치를 k라고 하자.
+-> K를 기준으로 왼쪽과 오른쪽으로 나누어진다. (왼쪽: Tall[k-1], 오른쪽: Short[N-k])
+=> Tall[N] = Tall[K-1] * Short[N-K] * (n-1)C(k-1)
+
+(정답)
+if n == 1: Tall[N]
+else Tall[N] + Short[N] = 2 * Tall[N]
+*/
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
