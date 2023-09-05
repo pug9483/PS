@@ -3,11 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
-
 public class Main {      
     static class Point{
         int y;
@@ -25,7 +20,6 @@ public class Main {
     public static int[][] memo;
     public static int[] dy = {0, 0, 1, -1};
     public static int[] dx = {1, -1, 0, 0};
-    public static final int INF = 2_000_000_000;
     
     public static void main(String[] args) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());   
