@@ -51,34 +51,36 @@ public class Main {
             }
             solve();
         }
+        System.out.print(sb);
     }
      
     public static void solve(){
         Queue<Point> q = new LinkedList<>();
         int[][][] dist = new int[L][R][C];
-        for(int i = 0; i < L; i++)
-            for(int j = 0; j < R; j++)
-                Arrays.fill(dist[i][j], -1);
         q.add(new Point(Sz, Sy, Sx));
-        dist[Sz][Sy][Sx] = 0;
+        q.add(new Point(Ez, Ey, Ex));
+        dist[Sz][Sy][Sx] = 1;
+        dist[Ez][Ey][Ex] = -1;
         
         while(!q.isEmpty()){
             Point here = q.poll();
             int distance = dist[here.z][here.y][here.x];
-            if(here.z == Ez && here.y == Ey && here.x == Ex){
-                System.out.printf("Escaped in %d minute(s).\n", distance);
-                return;
-            }
             for(int dir = 0; dir < 6; dir++){
                 int nz = here.z + dz[dir];
                 int ny = here.y + dy[dir];
                 int nx = here.x + dx[dir];
-                if(check(nz, ny, nx) || dist[nz][ny][nx] != -1 || A[nz][ny][nx] == '#') continue;
-                dist[nz][ny][nx] = distance + 1;
-                q.add(new Point(nz, ny, nx));
+                if(check(nz, ny, nx) || A[nz][ny][nx] == '#') continue;
+                if(dist[nz][ny][nx] * distance < 0){
+                    sb.append("Escaped in ").append(Math.abs(distance) + Math.abs(dist[nz][ny][nx]) - 1).append(" minute(s).\n");
+                    return;
+                }
+                if(dist[nz][ny][nx] == 0){
+                    dist[nz][ny][nx] = distance < 0 ? distance - 1 : distance + 1;
+                    q.add(new Point(nz, ny, nx));
+                }
             }
         }
-        System.out.println("Trapped!");
+        sb.append("Trapped!\n");
     }
     
     public static boolean check(int z, int y, int x){
