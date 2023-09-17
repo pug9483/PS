@@ -14,10 +14,10 @@ public class Main {
         D = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
-        A = new int[N+K-1];
+        A = new int[N+K];
         for(int i = 0; i < N; i++)
             A[i] = Integer.parseInt(br.readLine());
-        for(int i = 0; i < K-1; i++)
+        for(int i = 0; i < K; i++)
             A[N+i] = A[i];
         System.out.println(solve());
     }   
@@ -29,7 +29,7 @@ public class Main {
         int l = 0, r = 0;
         int[] has = new int[D+1];
         
-        while(r < N + K - 1){
+        while(r < N + K ){
             if(dishes > K){
                 has[A[l]]--;
                 if(has[A[l]] == 0) speciesCnt--;
@@ -42,16 +42,6 @@ public class Main {
                 dishes++;
                 r++;
             }
-            if(dishes <= K){
-                ret = Math.max(ret, has[C] == 0? speciesCnt + 1 : speciesCnt);
-            }
-        }
-        
-        while(l < r && dishes > K){
-            has[A[l]]--;
-            if(has[A[l]] == 0) speciesCnt--;
-            dishes--;
-            l++;
             if(dishes <= K) ret = Math.max(ret, has[C] == 0? speciesCnt + 1 : speciesCnt);
         }
         return ret;
