@@ -1,3 +1,18 @@
+/*
+조건1: 길이가 N
+조건2: 배열은 1부터 K까지의 수로 채움
+조건3: 연속한 수가 A,B일 때, A <= B 또는 A % B != 0
+
+방법1.
+D[N][A] = 길이가 N, 첫 수가 A인 배열의 개수
+D[N][A] = sum(D[N-1][B]) (B가 A보다 크거나 B가 A의 약수가 아닐 때)
+시간복잡도: O(n*k*k) (시간초과)
+
+방법2.
+D[N][A] = sum(D[N-1][C]) - sum(D[N-1][B]) (1<=C<=A, B는 A의 약수)
+시간복잡도: O(N*K*약수의개수)
+*/
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
