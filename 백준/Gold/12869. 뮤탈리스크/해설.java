@@ -1,3 +1,9 @@
+/*
+dp[a][b][c]: SCV의 체력이 a,b,c일 때, 모두 파괴하기 위해 공격해야 하는 횟수의 최솟값
+체력이 최대 60이기 때문에 dp[61][61][61]로 지정할 수 있다.
+공격할 수 있는 순서는 총 6가지가 있다. => 모두 시도해본다.
+*/
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
