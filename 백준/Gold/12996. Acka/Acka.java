@@ -9,7 +9,6 @@ public class Main {
     private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static int N;    
     private static int[][][][] dp;
-    private static final int INF = 987654321;
     private static final int MOD = 1_000_000_007;
     
     public static void main(String[] args) throws IOException {
@@ -27,21 +26,22 @@ public class Main {
     }   
     
     private static int solve(int here, int a, int b, int c){
-        if(a < 0 || b < 0 || c < 0) return 0;
         if(here == N){
             if(a == 0 && b == 0 && c == 0) return 1;    
             return 0;
         }
+        if(a < 0 || b < 0 || c < 0) return 0;
         if(dp[here][a][b][c] != -1) return dp[here][a][b][c];
         int ret = 0;
-        ret = (ret + solve(here+1, a-1, b, c)) % MOD;
-        ret = (ret + solve(here+1, a, b-1, c)) % MOD;
-        ret = (ret + solve(here+1, a, b, c-1)) % MOD;
-        ret = (ret + solve(here+1, a-1, b-1, c)) % MOD;
-        ret = (ret + solve(here+1, a-1, b, c-1)) % MOD;
-        ret = (ret + solve(here+1, a, b-1, c-1)) % MOD;
-        ret = (ret + solve(here+1, a-1, b-1, c-1)) % MOD;
-
+        
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 2; j++){
+                for(int k = 0; k < 2; k++){
+                    if(i+j+k == 0) continue;
+                    ret = (ret + solve(here+1, a-i, b-j, c-k)) % MOD;
+                }
+            }
+        }
         return dp[here][a][b][c] = ret;
     }
 }
