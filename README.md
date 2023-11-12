@@ -8,3 +8,15 @@
 
 3. Collections.binarySearch(list, num)
    : list에서 num을 찾았을 때는 위치를 반환하고, 찾지 못했을 때는 -1를 반환한다.
+
+4. int[] 배열 내림차순 정렬
+
+         Arr = Arrays.stream(Arr)
+   
+               .boxed()
+   
+               .sorted(Collections.reverseOrder())
+   
+               .mapToInt(Integer::intValue)
+   
+               .toArray();
