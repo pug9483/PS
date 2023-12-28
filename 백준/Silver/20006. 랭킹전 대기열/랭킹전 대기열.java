@@ -24,7 +24,7 @@ public class Main {
             return diff <= criteria;
         }
         public void sortPlayer(){
-             Collections.sort(players, (o1, o2) -> o1.name.compareTo(o2.name));
+            players.sort((o1, o2) -> o1.name.compareTo(o2.name));
         }
         public int getSize(){
             return players.size();
