@@ -3,8 +3,8 @@ import java.util.*;
 
 public class Main {   
     static class Player{
-        String name;
-        int level;
+        private String name;
+        private int level;
         public Player(String name, int level){
             this.name = name;
             this.level = level;
@@ -12,16 +12,16 @@ public class Main {
     }
     
     static class Room{
-        Player master;
-        List<Player> players = new ArrayList<>();
+        private Player master;
+        private List<Player> players = new ArrayList<>();
         
         public Room(Player master){
             this.master = master;
             players.add(master);
         }
-        public boolean comeIn(Player oPlayer){
+        public boolean comeIn(Player oPlayer, int criteria){
             int diff = Math.abs(master.level - oPlayer.level);
-            return diff <= 10;
+            return diff <= criteria;
         }
         public void sortPlayer(){
              Collections.sort(players, (o1, o2) -> o1.name.compareTo(o2.name));
@@ -34,6 +34,9 @@ public class Main {
         }
         public boolean isFull(int fullSize){
             return players.size() == fullSize;
+        }
+        public List<Player> getPlayers(){
+            return new ArrayList<>(players);
         }
     }
     
@@ -54,25 +57,24 @@ public class Main {
             String name = st.nextToken();
             A.add(new Player(name, level));
         }
+        
         for(Player p: A){
-            if(rooms.size() == 0) rooms.add(new Room(p));
-            else{
-                boolean hasCome = false;
-                for(Room room: rooms){
-                    if(room.getSize() < M && room.comeIn(p)){
-                        room.addPlayer(p);
-                        hasCome = true;
-                        break;
-                    }
-                }   
-                if(!hasCome) rooms.add(new Room(p));
-            }
+            boolean hasCome = false;
+            for(Room room: rooms){
+                if(room.getSize() < M && room.comeIn(p, 10)){
+                    room.addPlayer(p);
+                    hasCome = true;
+                    break;
+                }
+            }   
+            if(!hasCome) rooms.add(new Room(p));
         }
+        
         for(Room room: rooms){
             room.sortPlayer();
             if(room.isFull(M)) sb.append("Started!\n");
             else sb.append("Waiting!\n");
-            for(Player p: room.players)
+            for(Player p: room.getPlayers())
                 sb.append(p.level).append(" ").append(p.name).append("\n");
         }
         System.out.print(sb);
