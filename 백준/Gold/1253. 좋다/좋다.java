@@ -21,36 +21,26 @@ public class Main {
     }
     
     public static int solve(){
-        if(A.length <= 2) return 0;    
         int ret = 0;
-        for(int k = 0; k < N; k++){
-            for(int i = 0; i < N; i++){
-                if(i == k) continue;
-                int num = A[k] - A[i];
-                int j = Arrays.binarySearch(A, num);
-                if(check(i, j, k)){
-                    ret++;
-                    break;
+        
+        for(int i = 0; i < N; i++){
+            int num = A[i];
+            int left = 0, right = N-1;
+            
+            while(left < right){
+                int sum = A[left] + A[right];
+                if(sum == num){
+                    if(i == left) left++;
+                    else if(i == right) right--;
+                    else{
+                        ret++;
+                        break;
+                    }
                 }
+                else if(sum > num) right--;
+                else left++;
             }
         }
         return ret;
-    }
-    
-    public static boolean check(int i, int j, int k){
-        if(i < 0 || j < 0 || k < 0) return false;
-        if(i == j){
-            if(A[i] == A[k] && map.get(A[i]) >= 3) return true;
-            if(A[i] != A[k] && map.get(A[i]) >= 2) return true;
-            return false;
-        }
-        if(i != j){
-            if(k == j){
-                if(A[i] == A[j] && map.get(A[j]) >= 3) return true;
-                if(A[i] != A[j] && map.get(A[j]) >= 2) return true;
-            } 
-            else return true;
-        }
-        return false;
     }
 }
