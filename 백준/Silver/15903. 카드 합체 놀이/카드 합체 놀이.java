@@ -28,6 +28,6 @@ public class Main {
             pq.add(first+second);
             pq.add(first+second);
         }
-        System.out.println(pq.stream().reduce(0L, Long::sum));
+        System.out.println(pq.stream().mapToLong(i -> i).sum());
     }
 }
