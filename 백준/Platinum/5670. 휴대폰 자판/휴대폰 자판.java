@@ -4,22 +4,28 @@ import java.util.*;
 public class Main {
     static class TrieNode {
         Map<Character, TrieNode> children = new HashMap<>();
-        int terminal = -1;
+        boolean terminal = false;
         
-        public void insert(String s, int here, int id){
-            if(here == s.length()) terminal = id;
-            else{
-                char c = s.charAt(here);
-                children.computeIfAbsent(c, key -> new TrieNode());
-                children.get(c).insert(s, here+1, id);
+        public void insert(String word){
+            TrieNode node = this;
+            for(int i = 0; i < word.length(); i++){
+                char c = word.charAt(i);
+                node = node.children.computeIfAbsent(c, (key) -> new TrieNode());  
             }
+            node.terminal = true;    
         }
         
-        public int find(String s, int here, int id){
-            if(terminal == id) return 0;
-            TrieNode child = children.get(s.charAt(here));
-            int ret = child.find(s, here+1, id);
-            return children.size() == 1 && terminal == -1? ret : 1 + ret;
+        public int typing(String word){
+            TrieNode node = this;
+            int ret = 0;
+            for(int i = 0; i < word.length(); i++){
+                if(i == 0) ret++;
+                else if(node.terminal || node.children.size() > 1) ret++;
+                char c = word.charAt(i);
+                TrieNode childNode = node.children.get(c);
+                node = childNode;
+            }
+            return ret;
         }
     }
     
@@ -31,21 +37,17 @@ public class Main {
         while(true){
             String S = br.readLine();
             if(S == null) break;
-            trie = new TrieNode();
             int N = Integer.parseInt(S);
             input = new String[N];
+            trie = new TrieNode();
             for(int i = 0; i < N; i++){
                 String str = br.readLine();
                 input[i] = str;
-                trie.insert(str, 0, i);
+                trie.insert(str);
             }
-            trie.terminal = -1;
             int ret = 0;
             for(int i = 0; i < N; i++){
-                char first = input[i].charAt(0);
-                TrieNode nTrie = trie.children.get(first);
-                int num = 1 + nTrie.find(input[i], 1, i);
-                ret += num;
+                ret += trie.typing(input[i]);
             }
             System.out.printf("%.2f\n", 1.0 * ret / N);
         }
