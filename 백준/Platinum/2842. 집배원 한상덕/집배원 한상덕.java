@@ -50,7 +50,7 @@ public class Main {
         Arrays.sort(heights);
         List<Integer> list = new ArrayList<>();
         for(int height: heights){
-            if(!list.isEmpty() && list.get(list.size() - 1) == height) continue;
+            // if(!list.isEmpty() && list.get(list.size() - 1) == height) continue;
             list.add(height);
         }
         for(int i = 0; i < list.size(); i++){
