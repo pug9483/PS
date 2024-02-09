@@ -48,18 +48,14 @@ public class Main {
     public static int solve(){
         int ret = Integer.MAX_VALUE;
         Arrays.sort(heights);
-        List<Integer> list = new ArrayList<>();
-        for(int height: heights){
-            // if(!list.isEmpty() && list.get(list.size() - 1) == height) continue;
-            list.add(height);
-        }
-        for(int i = 0; i < list.size(); i++){
+        
+        for(int i = 0; i < N*N; i++){
             int left = i;
-            int right = list.size() - 1;
-            int minValue = list.get(i);
+            int right = N*N - 1;
+            int minValue = heights[i];
             while(left <= right){
                 int mid = (left + right) / 2;
-                int maxValue = list.get(mid);
+                int maxValue = heights[mid];
                 if(bfs(minValue, maxValue)){
                     ret = Math.min(ret, maxValue - minValue);
                     right = mid-1;
