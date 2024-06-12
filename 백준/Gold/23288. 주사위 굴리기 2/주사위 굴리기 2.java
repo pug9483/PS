@@ -21,7 +21,45 @@ public class Main {
             dice[3][1] = 6;
         }
 
-        public void moveRight() {
+        public void decideDir(int boardNum) {
+            int diceNum = getNumber();
+
+            if(diceNum > boardNum) dir = (dir + 1) % 4;
+            else if(diceNum < boardNum) dir = (dir + 3) % 4;
+        }
+
+        public void roll() {
+            if (dir == 0) {
+                if (yPos == 0) {
+                    moveDown();
+                    dir = 2;
+                }
+                else moveUp();
+            }
+            else if (dir == 1) {
+                if (xPos == M-1) {
+                    moveLeft();
+                    dir = 3;
+                }
+                else moveRight();
+            }
+            else if (dir == 2) {
+                if (yPos == N-1) {
+                    moveUp();
+                    dir = 0;
+                }
+                else moveDown();
+            }
+            else{
+                if (xPos == 0) {
+                    moveRight();
+                    dir = 1;
+                }
+                else moveLeft();
+            }
+        }
+
+        private void moveRight() {
             int tmp = dice[3][1];
             dice[3][1] = dice[1][2];
             dice[1][2] = dice[1][1];
@@ -30,7 +68,7 @@ public class Main {
             xPos++;
         }
 
-        public void moveLeft() {
+        private void moveLeft() {
             int tmp = dice[1][0];
             dice[1][0] = dice[1][1];
             dice[1][1] = dice[1][2];
@@ -39,7 +77,7 @@ public class Main {
             xPos--;
         }
 
-        public void moveDown() {
+        private void moveDown() {
             int tmp = dice[3][1];
             dice[3][1] = dice[2][1];
             dice[2][1] = dice[1][1];
@@ -48,7 +86,7 @@ public class Main {
             yPos++;
         }
 
-        public void moveUp() {
+        private void moveUp() {
             int tmp = dice[0][1];
             dice[0][1] = dice[1][1];
             dice[1][1] = dice[2][1];
@@ -70,11 +108,11 @@ public class Main {
             }
         }
     }
+
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     public static int N; // 세로 크기 (2 <= N <= 20)
     public static int M; // 가로 크기 (2 <= M <= 20)
     public static int K; // 이동 횟수 (1 <= K <= 1000)
-
     public static int[][] board;
     public static int[] dy = {0, 0, 1, -1};
     public static int[] dx = {1, -1, 0, 0};
@@ -100,25 +138,11 @@ public class Main {
         Dice dice = new Dice(0, 0, 1);
 
         while (k++ < K) {
-            // 주사위가 이동방향으로 한 칸 굴러감.
-            roll(dice);
-            // 점수 획득
+            dice.roll();
             ret += getScore(dice);
-            // 이동방향 결정
-            decideDir(dice);
+            dice.decideDir(board[dice.yPos][dice.xPos]);
         }
         return ret;
-    }
-
-    private static void decideDir(Dice dice) {
-        int diceNum = dice.getNumber();
-        int diceDir = dice.dir;
-        int boardNum = board[dice.yPos][dice.xPos];
-
-        if(diceNum > boardNum) diceDir = (diceDir + 1) % 4;
-        else if(diceNum < boardNum) diceDir = (diceDir + 3) % 4;
-
-        dice.dir = diceDir;
     }
 
     private static int getScore(Dice dice) {
@@ -138,54 +162,5 @@ public class Main {
             ret += getScoreHelper(ny, nx, num, visited);
         }
         return ret;
-    }
-
-    private static void roll(Dice dice) {
-        int diceDir = dice.dir;
-        int yPos = dice.yPos;
-        int xPos = dice.xPos;
-
-        if (diceDir == 0) {
-            if (yPos == 0) {
-                dice.moveDown();
-                diceDir = 2;
-            }
-            else{
-                dice.moveUp();
-            }
-        } else if (diceDir == 1) {
-            if (xPos == M-1) {
-                dice.moveLeft();
-                diceDir = 3;
-            }
-            else{
-                dice.moveRight();
-            }
-        } else if (diceDir == 2) {
-            if (yPos == N-1) {
-                dice.moveUp();
-                diceDir = 0;
-            }
-            else{
-                dice.moveDown();
-            }
-        }else{
-            if (xPos == 0) {
-                dice.moveRight();
-                diceDir = 1;
-            }
-            else{
-                dice.moveLeft();
-            }
-        }
-
-        dice.dir = diceDir;
-    }
-
-    private static int findIndex(int[] roll, int num) {
-        for(int i = 0; i < roll.length; i++){
-            if(roll[i] == num) return i;
-        }
-        return -1;
     }
 }
