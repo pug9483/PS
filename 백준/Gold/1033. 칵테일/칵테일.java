@@ -22,9 +22,8 @@ public class Main {
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
 
-            int gcd = getGcd(a, b);
-            int p = a / gcd;
-            int q = b / gcd;
+            int p = a / getGcd(a, b);
+            int q = b / getGcd(a, b);
             int k = A[v] * p;
             int t = A[u] * q;
 
