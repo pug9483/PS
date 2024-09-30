@@ -43,7 +43,7 @@ public class Main {
 
     public static int solve(int dst) {
         int[] dist = new int[N];
-
+    
         Queue<Integer> q = new LinkedList<>();
         for (int i = 0; i < N; i++) {
             if(indegree[i] == 0) {
@@ -56,12 +56,11 @@ public class Main {
             int here = q.poll();
             for (int next : graph.get(here)) {
                 dist[next] = Math.max(dist[next], dist[here] + A[next]);
-                if((--indegree[next]) == 0){
+                indegree[next]--;
+                if(indegree[next] == 0)
                     q.add(next);
-                }
             }
         }
-
         return dist[dst];
-    }
+    }    
 }
