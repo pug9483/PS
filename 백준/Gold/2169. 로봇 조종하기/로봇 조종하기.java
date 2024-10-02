@@ -1,45 +1,65 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
-public class Main { 
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static int N;
-    public static int M;
-    public static int[][] A;
-    public static int[][][] dp;
-    public static final int INF = 1_000_000_000;
-    
-    public static void main(String[] args) throws IOException{
+public class Main {
+    static int N, M;
+    static int[][] grid;
+    static int[][] dp;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        // 입력 처리
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        A = new int[N][M];
-        for(int i = 0; i < N; i++){
+        N = Integer.parseInt(st.nextToken()); // 행의 수
+        M = Integer.parseInt(st.nextToken()); // 열의 수
+
+        grid = new int[N][M]; // 격자 정보를 저장할 배열
+        dp = new int[N][M]; // DP 배열
+
+        // 격자 정보 입력
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            for(int j = 0; j < M; j++)
-                A[i][j] = Integer.parseInt(st.nextToken());
+            for (int j = 0; j < M; j++) {
+                grid[i][j] = Integer.parseInt(st.nextToken());
+            }
         }
-        dp = new int[N][M][3]; // 아래쪽(0), 왼쪽(1), 오른쪽(2)
-        for(int i = 0; i < N; i++)
-            for(int j = 0; j < M; j++)
-                Arrays.fill(dp[i][j], Integer.MIN_VALUE);
-        System.out.println(solve(0, 0, 0));
-    }
-    
-    public static int solve(int i, int j, int dir){
-        if(i < 0 || i >= N || j < 0 || j >= M) return -INF;
-        if(i == N-1 && j == M-1) return A[i][j];
-        if(dp[i][j][dir] != Integer.MIN_VALUE) return dp[i][j][dir];
-        int ret = A[i][j];
-        
-        if(dir == 1) ret = Math.max(solve(i+1, j, 0), solve(i, j+1, 1)) + A[i][j];
-        else if(dir == 2) ret = Math.max(solve(i+1, j, 0), solve(i, j-1, 2)) + A[i][j];
-        else{
-            ret = Math.max(ret,  + A[i][j]);
-            ret = Math.max(solve(i, j+1, 1), Math.max(solve(i+1, j, 0), solve(i, j-1, 2))) + A[i][j];
+
+        // 첫 번째 행 처리
+        dp[0][0] = grid[0][0];
+        for (int j = 1; j < M; j++) {
+            dp[0][j] = dp[0][j - 1] + grid[0][j];
         }
-        return dp[i][j][dir] = ret;
+
+        // 나머지 행 처리
+        for (int i = 1; i < N; i++) {
+            int[] left = new int[M];
+            int[] right = new int[M];
+
+            // 아래로부터 오는 값
+            for (int j = 0; j < M; j++) {
+                dp[i][j] = dp[i - 1][j] + grid[i][j];
+            }
+
+            // 왼쪽에서 오는 값
+            left[0] = dp[i][0];
+            for (int j = 1; j < M; j++) {
+                left[j] = Math.max(left[j - 1] + grid[i][j], dp[i][j]);
+            }
+
+            // 오른쪽에서 오는 값
+            right[M - 1] = dp[i][M - 1];
+            for (int j = M - 2; j >= 0; j--) {
+                right[j] = Math.max(right[j + 1] + grid[i][j], dp[i][j]);
+            }
+
+            // 현재 dp 값 갱신
+            for (int j = 0; j < M; j++) {
+                dp[i][j] = Math.max(left[j], right[j]);
+            }
+        }
+
+        // 결과 출력
+        System.out.println(dp[N - 1][M - 1]);
     }
 }
