@@ -2,51 +2,61 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static int N;
-    public static int[] A;
-    public static int[][] dp;
-    public static boolean[] visited;
-    public static List<List<Integer>> graph = new ArrayList<>();
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static int[] residents;
+    static ArrayList<Integer>[] tree;
+    static int[][] dp;
+    static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        N = Integer.parseInt(br.readLine());
+        residents = new int[N + 1];
+        tree = new ArrayList[N + 1];
+        dp = new int[N + 1][2]; // [][0]: 우수 마을 아님, [][1]: 우수 마을
+        visited = new boolean[N + 1];
+
+        // 각 마을의 주민 수 입력
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-
-        A = new int[N];
-        visited = new boolean[N];
-        dp = new int[N][2];
-
-        st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
-            A[i] = Integer.parseInt(st.nextToken());
+        for (int i = 1; i <= N; i++) {
+            residents[i] = Integer.parseInt(st.nextToken());
+            tree[i] = new ArrayList<>();
         }
-        for (int i = 0; i < N; i++) {
-            graph.add(new ArrayList<>());
-        }
+
+        // 트리 구성
         for (int i = 0; i < N - 1; i++) {
             st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken()) - 1;
-            int v = Integer.parseInt(st.nextToken()) - 1;
-            graph.get(u).add(v);
-            graph.get(v).add(u);
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+
+            tree[u].add(v);
+            tree[v].add(u);
         }
 
-        for (int i = 0; i < N; i++)
-            dp[i][1] = A[i];
+        // DP 시작 (루트 노드를 1로 설정)
+        dfs(1);
 
-        dfs(0);
-        System.out.println(Math.max(dp[0][0], dp[0][1]));
+        // 결과 출력
+        int result = Math.max(dp[1][0], dp[1][1]);
+        System.out.println(result);
     }
 
-    public static void dfs(int here) {
-        visited[here] = true;
+    static void dfs(int node) {
+        visited[node] = true;
+        dp[node][0] = 0;             // 현재 노드가 우수 마을이 아닌 경우
+        dp[node][1] = residents[node]; // 현재 노드가 우수 마을인 경우
 
-        for (int next : graph.get(here)) {
-            if(visited[next]) continue;
-            dfs(next);
-            dp[here][0] += Math.max(dp[next][0], dp[next][1]);
-            dp[here][1] += dp[next][0];
+        for (int child : tree[node]) {
+            if (!visited[child]) {
+                dfs(child);
+
+                // 현재 노드가 우수 마을이 아닌 경우
+                dp[node][0] += Math.max(dp[child][0], dp[child][1]);
+
+                // 현재 노드가 우수 마을인 경우
+                dp[node][1] += dp[child][0];
+            }
         }
     }
 }
