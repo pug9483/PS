@@ -1,53 +1,52 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {  
-    static class Node{
-        int type, sum;
-        public Node(int type, int sum){
-            this.type = type;
-            this.sum = sum;
-        }
-    }
-    
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+public class Main {
     public static int N;
-    public static List<List<Integer>> graph = new ArrayList<>();
-    public static int[] size;
+    public static int[] A;
     public static int[][] dp;
-    
-    public static StringBuilder sb = new StringBuilder();
-    
-    public static void main(String[] args) throws IOException{
+    public static boolean[] visited;
+    public static List<List<Integer>> graph = new ArrayList<>();
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    public static void main(String[] args) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
-        size = new int[N+1];
+
+        A = new int[N];
+        visited = new boolean[N];
+        dp = new int[N][2];
+
         st = new StringTokenizer(br.readLine());
-        dp = new int[N+1][2];
-        
-        for(int i = 1; i <= N; i++){
-            size[i] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < N; i++) {
+            A[i] = Integer.parseInt(st.nextToken());
         }
-        for(int i = 0; i <= N; i++)
+        for (int i = 0; i < N; i++) {
             graph.add(new ArrayList<>());
-        for(int i = 0; i < N-1; i++){
+        }
+        for (int i = 0; i < N - 1; i++) {
             st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
+            int u = Integer.parseInt(st.nextToken()) - 1;
+            int v = Integer.parseInt(st.nextToken()) - 1;
             graph.get(u).add(v);
             graph.get(v).add(u);
         }
-        dfs(1, 0);
-        System.out.println(Math.max(dp[1][0], dp[1][1]));
+
+        for (int i = 0; i < N; i++)
+            dp[i][1] = A[i];
+
+        dfs(0);
+        System.out.println(Math.max(dp[0][0], dp[0][1]));
     }
-    
-    public static void dfs(int here, int parent){
-        for(int next: graph.get(here)){
-            if(next == parent) continue;
-            dfs(next, here);
+
+    public static void dfs(int here) {
+        visited[here] = true;
+
+        for (int next : graph.get(here)) {
+            if(visited[next]) continue;
+            dfs(next);
             dp[here][0] += Math.max(dp[next][0], dp[next][1]);
             dp[here][1] += dp[next][0];
         }
-        dp[here][1] += size[here];
     }
 }
