@@ -1,16 +1,18 @@
 import java.io.*;
 import java.util.*;
 
+import static java.util.Comparator.comparingInt;
+
 public class Main {
     static class Node{
         int idx;
-        int ci; // 공의 색깔
-        int si; // 공의 크기
+        int color; // 공의 색깔
+        int size; // 공의 크기
 
-        public Node(int idx, int ci, int si) {
+        public Node(int idx, int color, int size) {
             this.idx = idx;
-            this.ci = ci;
-            this.si = si;
+            this.color = color;
+            this.size = size;
         }
     }
 
@@ -18,7 +20,6 @@ public class Main {
     static List<Node> list = new ArrayList<>();
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    // sum - A[color] (단, prev != here일 때, A[color]에 prev값을 집어넣는다. List에 저장함)
     public static void  main(String[] args) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
@@ -32,27 +33,25 @@ public class Main {
     }
 
     private static void solve() {
-        list.sort((Comparator.comparingInt((Node o) -> o.si).thenComparingInt(o -> o.ci)));
+        list.sort(comparingInt(o -> o.size));
 
-        int sum = 0;
+        int totalSum = 0;
         int[] colorSum = new int[N]; // 현재까지 들어간 수들의 합
         int[] ret = new int[N];
-        Queue<Node> waitings = new LinkedList<>(); // 크기가 같은 공들의 저장
 
-        int prevSi = -1;
-        for (Node here : list) {
-            if (here.si != prevSi) {
-                while (!waitings.isEmpty()) {
-                    Node prevNode = waitings.poll();
-                    sum += prevNode.si;
-                    colorSum[prevNode.ci] += prevNode.si;
-                }
+
+        int j = 0;
+        for (int i = 0; i < N; i++) {
+            Node here = list.get(i);
+
+            while (list.get(j).size < here.size) {
+                totalSum += list.get(j).size;
+                colorSum[list.get(j).color] += list.get(j).size;
+                j++;
             }
-            ret[here.idx] = sum - colorSum[here.ci];
-            waitings.add(here);
-            prevSi = here.si;
-        }
 
+            ret[here.idx] = totalSum - colorSum[here.color];
+        }
 
         StringBuilder sb = new StringBuilder();
         Arrays.stream(ret).forEach(o -> sb.append(o).append("\n"));
