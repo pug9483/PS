@@ -6,45 +6,54 @@ import java.util.StringTokenizer;
 
 public class Main {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
+    static int N;
+    static int M;
+    static int[] A;
     public static void main(String[] args) throws Exception {
-        int N = Integer.parseInt(br.readLine());
+        N = Integer.parseInt(br.readLine());
 
-        int[] stationery = new int[N];
-        int min = 50;
-        int index = -1;
+        A = new int[N];
+
+        int minMoney = Integer.MAX_VALUE;
+        int minNum = -1;
+
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
-            stationery[i] = Integer.parseInt(st.nextToken());
-
-            if (min >= stationery[i]) {
-                min = stationery[i];
-                index = i;
+            A[i] = Integer.parseInt(st.nextToken());
+            if (minMoney >= A[i]) {
+                minMoney = A[i];
+                minNum = i;
             }
         }
 
-        int money = Integer.parseInt(br.readLine());
-        char[] digits = new char[51];
+        M = Integer.parseInt(br.readLine());
+
+        solve(minMoney, minNum);
+    }
+
+    static void solve(int minMoney, int index) {
+        int[] digits = new int[51];
+        int money = M;
 
         int cnt = 0;
-        while (money >= min) {
-            digits[cnt++] = (char) (index + '0');
-            money -= min;
+        while (money >= minMoney) {
+            digits[cnt++] = index;
+            money -= minMoney;
         }
 
         int start = 0;
         for (int i = 0; i < cnt; i++) {
             for (int j = N - 1; j >= 0; j--) {
-                if (stationery[j] <= money + min) {
-                    digits[i] = (char) (j + '0');
-                    money += min - stationery[j];
+                if (A[j] <= money + minMoney) {
+                    digits[i] = j;
+                    money += minMoney - A[j];
                     break;
                 }
             }
 
-            if (digits[start] == '0') {
+            if (digits[start] == 0) {
                 start++;
-                money += min;
+                money += minMoney;
             }
         }
 
