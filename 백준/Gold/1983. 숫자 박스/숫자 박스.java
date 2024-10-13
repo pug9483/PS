@@ -1,50 +1,44 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
-public class Main { 
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static int N;
-    public static List<Integer> listA = new ArrayList<>();
-    public static List<Integer> listB = new ArrayList<>();
-    public static int[][][] dp;
-    public static final int INF = 987654321;
-    
-    public static void main(String[] args) throws IOException{
+// 문제 H : 단어 접두사 분석 시스템
+public class Main {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static int[] A;
+    static int[] B;
+
+    public static void main(String[] args) throws Exception {
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
-        dp = new int[N+1][N+1][N+1];
+
+        List<Integer> A = new ArrayList<>(List.of(0));
+        List<Integer> B = new ArrayList<>(List.of(0));
+
         st = new StringTokenizer(br.readLine());
-        listA.add(0);
-        listB.add(0);
-        for(int j = 0; j < N; j++){
+        for (int i = 1; i <= N; i++) {
             int num = Integer.parseInt(st.nextToken());
-            if(num == 0) continue;
-            listA.add(num);
+            if (num != 0) A.add(num);
         }
         st = new StringTokenizer(br.readLine());
-        for(int j = 0; j < N; j++){
+        for (int i = 1; i <= N; i++) {
             int num = Integer.parseInt(st.nextToken());
-            if(num == 0) continue;
-            listB.add(num);
+            if (num != 0) B.add(num);
         }
-        System.out.println(solve());
-    }
-     
-    public static int solve(){
-        for(int k = 1; k <= N; k++){
-            for(int i = 1; i < listA.size(); i++){
-                for(int j = 1; j < listB.size(); j++){
-                    if(i > k) continue;
-                    if(j > k) continue;
-                    int cur = dp[k-1][i-1][j-1] + listA.get(i) * listB.get(j);
-                    if(j >= 1 && k >= i+1) cur = Math.max(cur, dp[k-1][i][j-1]);
-                    if(i >= 1 && k >= j+1) cur = Math.max(cur, dp[k-1][i-1][j]);
-                    dp[k][i][j] = cur;
+
+        int[][][] dp = new int[N + 1][A.size()][B.size()];
+
+        for (int size = 1; size <= N; size++) {
+            for (int i = 1; i < A.size(); i++) {
+                for (int j = 1; j < B.size(); j++) {
+                    if (i > size || j > size) continue;
+                    int curr = dp[size - 1][i - 1][j - 1] + (A.get(i) * B.get(j));
+                    if (size >= i + 1) curr = Math.max(curr, dp[size - 1][i][j - 1]);
+                    if (size >= j + 1) curr = Math.max(curr, dp[size - 1][i - 1][j]);
+                    dp[size][i][j] = curr;
                 }
             }
         }
-        return dp[N][listA.size()-1][listB.size()-1];
+        System.out.println(dp[N][A.size() - 1][B.size() - 1]);
     }
 }
