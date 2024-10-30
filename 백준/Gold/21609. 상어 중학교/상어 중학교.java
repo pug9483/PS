@@ -2,13 +2,35 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static class Node {
-        List<Point> list;
-        int rainbowCnt;
+    static class Group {
+        Point anchorPoint;
+        int rainbowBlockCount;
+        List<Point> totalBlocks;
 
-        public Node(List<Point> list, int rainbowCnt) {
-            this.list = list;
-            this.rainbowCnt = rainbowCnt;
+        public Group(Point anchorPoint, int rainbowBlockCount, List<Point> totalBlocks) {
+            this.anchorPoint = anchorPoint;
+            this.rainbowBlockCount = rainbowBlockCount;
+            this.totalBlocks = totalBlocks;
+        }
+
+        public int getBlockSize() {
+            return totalBlocks.size();
+        }
+
+        public boolean isBetterGroup(Group otherGroup) {
+            boolean ret = getBlockSize() < otherGroup.getBlockSize();
+            ret |= getBlockSize() == otherGroup.getBlockSize() && rainbowBlockCount < otherGroup.rainbowBlockCount;
+            ret |= getBlockSize() == otherGroup.getBlockSize() && rainbowBlockCount == otherGroup.rainbowBlockCount && (
+                    anchorPoint.y < otherGroup.anchorPoint.y || (anchorPoint.y == otherGroup.anchorPoint.y && anchorPoint.x < otherGroup.anchorPoint.x));
+            return ret;
+        }
+
+        public void updateGroup(Group otherGroup) {
+            if (isBetterGroup(otherGroup)) {
+                totalBlocks = otherGroup.totalBlocks;
+                rainbowBlockCount = otherGroup.rainbowBlockCount;
+                anchorPoint = otherGroup.anchorPoint;
+            }
         }
     }
 
@@ -48,11 +70,11 @@ public class Main {
         int ret = 0;
 
         while (true) {
-            List<Point> maxGroup = findMaxGroup();
-            if (maxGroup.size() < 2) {
+            Group maxGroup = findMaxGroup();
+            if (maxGroup.getBlockSize() < 2) {
                 break;
             }
-            ret += removeMaxGroup(maxGroup);
+            ret += removeMaxGroup(maxGroup.totalBlocks);
             goDown();
             rotate();
             goDown();
@@ -65,11 +87,8 @@ public class Main {
      * 일반 블록이 적어도 하나 있어야 한다. 일반 블록의 색은 모두 같아야 한다. 검은색 블록(-1)은 포함되면 안 되고, 무지개 블록(0)은 얼마나 들어있든 상관없다. 그룹에 속한 블록의 개수는 2보다
      * 크거나 같아야 하며, 임의의 한 블록에서 그룹에 속한 인접한 칸으로 이동해서 그룹에 속한 다른 모든 칸으로 이동할 수 있어야 한다.
      */
-    private static List<Point> findMaxGroup() {
-        int maxSize = 0;
-        int maxRainbowCnt = 0;
-        List<Point> ret = new ArrayList<>();
-        int maxY = -1, maxX = -1;
+    private static Group findMaxGroup() {
+        Group group = new Group(new Point(-1, -1), 0, new ArrayList<>());
 
         boolean[][] visited = new boolean[N][N];
         for (int y = 0; y < N; y++) {
@@ -77,36 +96,16 @@ public class Main {
                 if (visited[y][x] || A[y][x] <= 0) {
                     continue;
                 }
-                Node node = bfs(y, x, visited);
-
-                if(node.list.size() > maxSize){
-                    maxSize = node.list.size();
-                    maxRainbowCnt = node.rainbowCnt;
-                    maxY = y;
-                    maxX = x;
-                    ret = node.list;
-                }
-                else if (node.list.size() == maxSize && node.rainbowCnt > maxRainbowCnt) {
-                    maxRainbowCnt = node.rainbowCnt;
-                    maxY = y;
-                    maxX = x;
-                    ret = node.list;
-                }
-                else if (node.list.size() == maxSize && maxRainbowCnt == node.rainbowCnt) {
-                    if (maxY < y || (maxY == y && maxX < x)) {
-                        maxY = y;
-                        maxX = x;
-                        ret = node.list;
-                    }
-                }
+                Group otherGroup = bfs(y, x, visited);
+                group.updateGroup(otherGroup);
             }
         }
-        return ret;
+        return group;
     }
 
-    private static Node bfs(int sy, int sx, boolean[][] visited) {
+    private static Group bfs(int sy, int sx, boolean[][] visited) {
+        int rainbowBlockCnt = 0;
         List<Point> ret = new ArrayList<>();
-        int rainbowCnt = 0;
         Stack<Point> stack = new Stack<>();
 
         Queue<Point> q = new LinkedList<>();
@@ -126,7 +125,7 @@ public class Main {
                 }
                 if (A[ny][nx] == A[sy][sx] || A[ny][nx] == 0) {
                     if (A[ny][nx] == 0) {
-                        rainbowCnt++;
+                        rainbowBlockCnt++;
                         stack.add(new Point(ny, nx));
                     }
                     visited[ny][nx] = true;
@@ -139,7 +138,7 @@ public class Main {
             Point p = stack.pop();
             visited[p.y][p.x] = false;
         }
-        return new Node(ret, rainbowCnt);
+        return new Group(new Point(sy, sx), rainbowBlockCnt, ret);
     }
 
     private static int removeMaxGroup(List<Point> maxGroup) {
