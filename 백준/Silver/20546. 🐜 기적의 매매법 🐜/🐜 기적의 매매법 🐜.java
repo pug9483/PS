@@ -59,7 +59,8 @@ public class Main {
             }
 
             @Override
-            public void sell(StockAccount stockAccount, int today) {}
+            public void sell(StockAccount stockAccount, int today) {
+            }
         });
 
         StockAccount seoungStockAccount = new StockAccount(money, 0, stockPrices, new Strategy() {
@@ -69,15 +70,15 @@ public class Main {
                     return;
                 }
 
-                int threeDaysAgoPrice = stockAccount.stockPrices[today - 3];
-                int twoDaysAgoPrice = stockAccount.stockPrices[today - 2];
-                int yesterdayPrice = stockAccount.stockPrices[today - 1];
-                int todayPrice = stockAccount.stockPrices[today];
-                if (threeDaysAgoPrice > twoDaysAgoPrice && twoDaysAgoPrice > yesterdayPrice) {
-                    int stock = stockAccount.money / todayPrice;
-                    stockAccount.money -= stock * todayPrice;
-                    stockAccount.stock += stock;
+                for (int prev = today - 3; prev < today - 1; prev++) {
+                    if (stockAccount.stockPrices[prev] <= stockAccount.stockPrices[prev + 1]) {
+                        return;
+                    }
                 }
+
+                int stock = stockAccount.money / stockAccount.stockPrices[today];
+                stockAccount.money -= stock * stockAccount.stockPrices[today];
+                stockAccount.stock += stock;
             }
 
             @Override
@@ -86,14 +87,13 @@ public class Main {
                     return;
                 }
 
-                int threeDaysAgoPrice = stockAccount.stockPrices[today - 3];
-                int twoDaysAgoPrice = stockAccount.stockPrices[today - 2];
-                int yesterdayPrice = stockAccount.stockPrices[today - 1];
-                int todayPrice = stockAccount.stockPrices[today];
-                if (threeDaysAgoPrice < twoDaysAgoPrice && twoDaysAgoPrice < yesterdayPrice) {
-                    stockAccount.money += stockAccount.stock * todayPrice;
-                    stockAccount.stock = 0;
+                for (int prev = today - 3; prev < today - 1; prev++) {
+                    if (stockAccount.stockPrices[prev] >= stockAccount.stockPrices[prev + 1]) {
+                        return;
+                    }
                 }
+                stockAccount.money += stockAccount.stock * stockAccount.stockPrices[today];
+                stockAccount.stock = 0;
             }
         });
 
@@ -106,10 +106,10 @@ public class Main {
 
         int junStockAccountProfit = junStockAccount.getProfit(M - 1);
         int seoungStockAccountProfit = seoungStockAccount.getProfit(M - 1);
+
         if (junStockAccountProfit > seoungStockAccountProfit) {
             System.out.println("BNP");
-        }
-        else if (junStockAccountProfit < seoungStockAccountProfit) {
+        } else if (junStockAccountProfit < seoungStockAccountProfit) {
             System.out.println("TIMING");
         } else {
             System.out.println("SAMESAME");
