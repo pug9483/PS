@@ -2,6 +2,16 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    static class File{
+        String name;
+        String ext;
+
+        public File(String name, String ext) {
+            this.name = name;
+            this.ext = ext;
+        }
+    }
+
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
     static Map<String, List<String>> map = new HashMap<>();
@@ -11,15 +21,14 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
 
         for (int i = 0; i < N; i++) {
-            String file = br.readLine();
-            String[] splitedFile = splitFile(file);
-            if(map.containsKey(splitedFile[1])){
-                map.get(splitedFile[1]).add(splitedFile[0]);
+            File file =  splitFile(br.readLine());
+            if(map.containsKey(file.ext)){
+                map.get(file.ext).add(file.name);
             }
             else{
                 List<String> files = new ArrayList<>();
-                files.add(splitedFile[0]);
-                map.put(splitedFile[1], files);
+                files.add(file.name);
+                map.put(file.ext, files);
             }
         }
 
@@ -30,8 +39,8 @@ public class Main {
         System.out.println(sb);
     }
 
-    private static String[] splitFile(String file) {
+    private static File splitFile(String file) {
         String[] split = file.split("\\.", -1);
-        return split;
+        return new File(split[0], split[1]);
     }
 }
