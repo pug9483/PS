@@ -1,126 +1,153 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
+
+/**
+ * 구슬 탈출은 직사각형 보드에 빨간 구슬과 파란 구슬을 하나씩 넣은 다음, 빨간 구슬을 구멍을 통해 빼내는 게임이다.
+ * 가장 바깥 행과 열은 모두 막혀져 있고, 보드에는 구멍이 하나 있다.
+ * 빨간 구슬과 파란 구슬의 크기는 보드에서 1×1크기의 칸을 가득 채우는 사이즈이고, 각각 하나씩 들어가 있다.
+ * 게임의 목표는 빨간 구슬을 구멍을 통해서 빼내는 것이다. 이때, 파란 구슬이 구멍에 들어가면 안 된다.
+ * 왼쪽으로 기울이기, 오른쪽으로 기울이기, 위쪽으로 기울이기, 아래쪽으로 기울이기와 같은 네 가지 동작이 가능하다.
+ *
+ * 각각의 동작에서 공은 동시에 움직인다.
+ * 빨간 구슬이 구멍에 빠지면 성공이지만, 파란 구슬이 구멍에 빠지면 실패이다.
+ * 빨간 구슬과 파란 구슬이 동시에 구멍에 빠져도 실패이다.
+ * 빨간 구슬과 파란 구슬은 동시에 같은 칸에 있을 수 없다.
+ * 빨간 구슬과 파란 구슬의 크기는 한 칸을 모두 차지한다.
+ * 기울이는 동작을 그만하는 것은 더 이상 구슬이 움직이지 않을 때 까지이다.
+ *
+ * 최소 몇 번 만에 빨간 구슬을 구멍을 통해 빼낼 수 있는지 구하는 프로그램을 작성하시오.
+ * 10번 이하로 움직여서 빨간 구슬을 구멍을 통해 빼낼 수 없으면 -1을 출력한다.
+ */
 
 public class Main {
-    static class Marbles {
-        public int ry;
-        public int rx;
-        public int by;
-        public int bx;
-        public int dist;
 
-        public Marbles(int ry, int rx, int by, int bx, int dist) {
-            this.ry = ry;
-            this.rx = rx;
-            this.by = by;
-            this.bx = bx;
-            this.dist = dist;
+    static class Ball{
+        int y, x;
+
+        public Ball(int y, int x) {
+            this.y = y;
+            this.x = x;
+        }
+
+        public Ball move(int dir, char[][] board) {
+            int sy = y;
+            int sx = x;
+            while(true){
+                int ny = sy + dy[dir];
+                int nx = sx + dx[dir];
+                if(board[ny][nx] == '#') break;
+                sy = ny;
+                sx = nx;
+                if(board[sy][sx] == 'O') break;
+            }
+            return new Ball(sy, sx);
+        }
+
+        public boolean isHole(char[][] board) {
+            return board[y][x] == 'O';
         }
     }
 
-    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static int N, M;
-    private static char[][] board;
-    private static int[] red = new int[2];
-    private static int[] blue = new int[2];
-    private static int[] dy = {-1, 0, 1, 0};
-    private static int[] dx = {0, 1, 0, -1};
+    static class BallContainer{
+        Ball redBall;
+        Ball blueBall;
+        int rollCount;
+
+        public BallContainer(Ball redBall, Ball blueBall, int rollCount) {
+            this.redBall = redBall;
+            this.blueBall = blueBall;
+            this.rollCount = rollCount;
+        }
+
+        public BallContainer roll(int dir, char[][] board) {
+            Ball movedRedBall = redBall.move(dir, board);
+            Ball movedBlueBall = blueBall.move(dir, board);
+
+            if(movedBlueBall.isHole(board)) return null;
+
+            if (isDuplicated(movedRedBall, movedBlueBall)) {
+                if(dir == 0){
+                    if(redBall.x < blueBall.x) movedRedBall.x--;
+                    else movedBlueBall.x--;
+                } else if(dir == 1){
+                    if(blueBall.x > redBall.x) movedBlueBall.x++;
+                    else movedRedBall.x++;
+                } else if (dir == 2) {
+                    if(redBall.y < blueBall.y) movedRedBall.y--;
+                    else movedBlueBall.y--;
+                } else if (dir == 3) {
+                    if(redBall.y > blueBall.y) movedRedBall.y++;
+                    else movedBlueBall.y++;
+                }
+            }
+
+            return new BallContainer(movedRedBall, movedBlueBall, rollCount+1);
+        }
+
+        public boolean isSuccess(char[][] board) {
+            return redBall.isHole(board) && !blueBall.isHole(board);
+        }
+
+        private boolean isDuplicated(Ball movedRedBall, Ball movedBlueBall) {
+            return movedRedBall.y == movedBlueBall.y && movedRedBall.x == movedBlueBall.x;
+        }
+    }
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N, M;
+    static char[][] board;
+    static final int[] dy = {0, 0, 1, -1}; // 우, 좌, 하, 상
+    static final int[] dx = {1, -1, 0, 0};
+    static final int LIMIT = 10;
 
     public static void main(String[] args) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         board = new char[N][M];
+
+        Ball redBall = null;
+        Ball blueBall = null;
+
         for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            String s = st.nextToken();
+            String s = br.readLine();
             for (int j = 0; j < M; j++) {
                 board[i][j] = s.charAt(j);
                 if (board[i][j] == 'R') {
-                    red[0] = i;
-                    red[1] = j;
-                }
-                else if (board[i][j] == 'B'){
-                    blue[0] = i;
-                    blue[1] = j;
+                    redBall = new Ball(i, j);
+                } else if (board[i][j] == 'B') {
+                    blueBall = new Ball(i, j);
                 }
             }
         }
-        System.out.println(solve());
+        BallContainer ballContainer = new BallContainer(redBall, blueBall, 0);
+        System.out.println(solve(ballContainer));
     }
 
-    private static int solve() {
-        boolean[][][][] visited = new boolean[N][M][N][M];
-        Queue<Marbles> queue = new LinkedList<>();
-        queue.add(new Marbles(red[0], red[1], blue[0], blue[1], 0));
-        visited[red[0]][red[1]][blue[0]][blue[1]] = true;
+    private static int solve(BallContainer ballContainer) {
+        Queue<BallContainer> q = new LinkedList<>();
+        boolean[][][][][] visited = new boolean[N][M][N][M][LIMIT+2];
+        q.add(ballContainer);
 
-        while (!queue.isEmpty()) {
-            Marbles marbles = queue.poll();
-            int ry = marbles.ry;
-            int rx = marbles.rx;
-            int by = marbles.by;
-            int bx = marbles.bx;
-            int dist = marbles.dist;
-            if (dist >= 10) return -1;
+        while (!q.isEmpty()) {
+            BallContainer container = q.poll();
+            if(container.rollCount > LIMIT) continue;
+
+            if (container.isSuccess(board)) {
+                return container.rollCount;
+            }
 
             for (int dir = 0; dir < 4; dir++) {
-                boolean redFinish = false;
-                boolean blueFinish = false;
+                BallContainer rolledBallContainer = container.roll(dir, board);
+                if(rolledBallContainer == null) continue;
 
-                int newRy = ry;
-                int newRx = rx;
-                while (board[newRy + dy[dir]][newRx + dx[dir]] != '#') {
-                    newRy += dy[dir];
-                    newRx += dx[dir];
-                    if (board[newRy][newRx] == 'O') {
-                        redFinish = true;
-                        break;
-                    }
-                }
-
-                int newBy = by;
-                int newBx = bx;
-                while (board[newBy + dy[dir]][newBx + dx[dir]] != '#') {
-                    newBy += dy[dir];
-                    newBx += dx[dir];
-                    if (board[newBy][newBx] == 'O') {
-                        blueFinish = true;
-                        break;
-                    }
-                }
-
-                if (blueFinish) continue;
-                if (redFinish) return dist + 1;
-
-                // 겹치는 경우
-                if (newRy == newBy && newRx == newBx) {
-                    if (dir == 0) { // 위쪽으로 기울이기
-                        if (ry > by) newRy += 1;
-                        else newBy += 1;
-                    } else if (dir == 1) { // 오른쪽으로 기울이기
-                        if (rx < bx) newRx -= 1;
-                        else newBx -= 1;
-                    } else if (dir == 2) { // 아래쪽으로 기울이기
-                        if (ry < by) newRy -= 1;
-                        else newBy -= 1;
-                    } else { // 왼쪽으로 기울이기
-                        if (rx > bx) newRx += 1;
-                        else newBx += 1;
-                    }
-                }
-
-                if (!visited[newRy][newRx][newBy][newBx]) {
-                    visited[newRy][newRx][newBy][newBx] = true;
-                    queue.add(new Marbles(newRy, newRx, newBy, newBx, dist+1));
+                if (!visited[rolledBallContainer.redBall.y][rolledBallContainer.redBall.x][rolledBallContainer.blueBall.y][rolledBallContainer.blueBall.x][rolledBallContainer.rollCount]) {
+                    visited[rolledBallContainer.redBall.y][rolledBallContainer.redBall.x][rolledBallContainer.blueBall.y][rolledBallContainer.blueBall.x][rolledBallContainer.rollCount] = true;
+                    q.add(rolledBallContainer);
                 }
             }
         }
+
         return -1;
     }
 }
