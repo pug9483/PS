@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
@@ -56,19 +57,20 @@ public class Main {
         return ans;
     }
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static void main(String[] args) throws IOException{
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
         List<Point> points = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
-            int x = sc.nextInt();
-            int y = sc.nextInt();
+            st = new StringTokenizer(br.readLine());
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
             points.add(new Point(x, y));
         }
 
         points.sort(Comparator.comparingInt(p -> p.x));
         System.out.println(closest(points, 0, n - 1));
-        sc.close();
     }
 }
