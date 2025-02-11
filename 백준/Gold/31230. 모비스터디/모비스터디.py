@@ -19,7 +19,7 @@ def dijkstra(src, graph, N):
     return dist
 
 def main():
-    INF = 987654321987659875454
+    INF = 10**16
     input = sys.stdin.read
     data = input().splitlines()
     
