@@ -2,13 +2,20 @@ import java.util.*;
 import java.io.*;
 
 public class Solution {
+	static class Node{
+		int sum, calory;
+		
+		public Node(int sum, int calory) {
+			this.sum = sum;
+			this.calory = calory;
+		}
+	}
+	
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static StringBuilder sb = new StringBuilder();
 	static int N; // 재료의 수
 	static int L; // 최대 칼로리의 수
-	static int[] A; // 점수
-	static int[] B; // 칼로리
-	static int ret;
+	static List<Node> list;
 	
 	public static void main(String[] args) throws IOException {
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -18,27 +25,29 @@ public class Solution {
 			st = new StringTokenizer(br.readLine());
 			N = Integer.parseInt(st.nextToken());
 			L = Integer.parseInt(st.nextToken());
-			A = new int[N];
-			B = new int[N];
-			ret = 0;
+			list = new ArrayList<>();
 			
 			for(int i = 0; i < N; i++) {
 				st = new StringTokenizer(br.readLine());
-				A[i] = Integer.parseInt(st.nextToken());
-				B[i] = Integer.parseInt(st.nextToken());
+				int sum = Integer.parseInt(st.nextToken());
+				int calory = Integer.parseInt(st.nextToken());
+				list.add(new Node(sum, calory));
 			}
 			
-			solve(-1, 0, 0);
-			System.out.printf("#%d %d\n", t, ret);
+			Collections.sort(list, (o1, o2) -> Integer.compare(o1.calory, o2.calory));
+			System.out.printf("#%d %d\n", t, solve(-1, 0));
 		}
 	}
 	
-	private static void solve(int here, int sum, int calory) {
-		if(calory <= L)
-			ret = Math.max(ret, sum);
+	private static int solve(int here, int calory) {
+		int ret = 0;
 		
 		for(int next = here + 1; next < N; next++) {
-			solve(next, sum + A[next], calory + B[next]);
+			int nextCalory = calory + list.get(next).calory;
+			if(nextCalory > L) break;
+			ret = Math.max(ret, list.get(next).sum + solve(next, nextCalory));
 		}
+		
+		return ret;
 	}
 }
