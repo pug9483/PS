@@ -35,18 +35,18 @@ public class Solution {
 			}
 			
 			Collections.sort(list, (o1, o2) -> Integer.compare(o1.calory, o2.calory));
-			System.out.printf("#%d %d\n", t, solve(-1, 0));
+			System.out.printf("#%d %d\n", t, solve(0, 0));
 		}
 	}
 	
 	private static int solve(int here, int calory) {
-		int ret = 0;
+		if(here >= N) return 0;
 		
-		for(int next = here + 1; next < N; next++) {
-			int nextCalory = calory + list.get(next).calory;
-			if(nextCalory > L) break;
-			ret = Math.max(ret, list.get(next).sum + solve(next, nextCalory));
-		}
+		int ret = solve(here+1, calory);
+		
+		int nextCalory = calory + list.get(here).calory;
+		if(nextCalory > L) return 0;
+		ret = Math.max(ret, list.get(here).sum + solve(here + 1, nextCalory));
 		
 		return ret;
 	}
