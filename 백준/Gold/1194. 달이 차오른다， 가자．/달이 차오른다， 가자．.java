@@ -68,29 +68,28 @@ public class Main {
 				int ny = here.y + dy[dir];
 				int nx = here.x + dx[dir];
 				if(ny < 0 || ny >= N || nx < 0 || nx >= M || board[ny][nx] == '#') continue;
+				if (isDoor(ny, nx) && (here.set & 1 << (board[ny][nx] - 'A')) == 0) continue;
 
-				if (board[ny][nx] == 'a' || board[ny][nx] == 'b' || board[ny][nx] == 'c' || board[ny][nx] == 'd'
-					|| board[ny][nx] == 'e' || board[ny][nx] == 'f') {
-					int newSet = here.set | (1 << (board[ny][nx] - 'a'));
-					if(dist[ny][nx][newSet] != INF) continue;
+				int newSet = here.set;
+				if (isKey(ny, nx)) newSet |= (1 << (board[ny][nx] - 'a'));
+
+				if(dist[ny][nx][newSet] == INF){
 					dist[ny][nx][newSet] = d + 1;
 					q.add(new Node(ny, nx, newSet));
-				}
-				else if (board[ny][nx] == 'A' || board[ny][nx] == 'B' || board[ny][nx] == 'C' || board[ny][nx] == 'D'
-					|| board[ny][nx] == 'E' || board[ny][nx] == 'F') {
-					if ((here.set & 1 << (board[ny][nx] - 'A')) == 0) continue;
-					if(dist[ny][nx][here.set] != INF) continue;
-					dist[ny][nx][here.set] = d + 1;
-					q.add(new Node(ny, nx, here.set));
-
-				}
-				else if(dist[ny][nx][here.set] == INF){
-					dist[ny][nx][here.set] = d + 1;
-					q.add(new Node(ny, nx, here.set));
 				}
 			}
 		}
 
 		return -1;
+	}
+
+	private static boolean isKey(int ny, int nx) {
+		return board[ny][nx] == 'a' || board[ny][nx] == 'b' || board[ny][nx] == 'c' || board[ny][nx] == 'd'
+			|| board[ny][nx] == 'e' || board[ny][nx] == 'f';
+	}
+
+	private static boolean isDoor(int ny, int nx) {
+		return board[ny][nx] == 'A' || board[ny][nx] == 'B' || board[ny][nx] == 'C' || board[ny][nx] == 'D'
+			|| board[ny][nx] == 'E' || board[ny][nx] == 'F';
 	}
 }
